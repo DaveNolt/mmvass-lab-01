@@ -1,0 +1,70 @@
+<html>
+
+<head>
+    <title>File upload Node.</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+        crossorigin="anonymous">
+</head>
+
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6 col-lg-offset-3">
+                <form id="uploadForm" enctype="multipart/form-data" action="/api/upload" method="post">
+                    <div class="form-group">
+                        <input class="form-control" type="file" name="userFile" />
+                    </div>
+                    <div class="form-group">
+                        <input class="form-control" type="submit" value="Upload Image" name="submit">
+                    </div>
+                    <span id="status"></span>
+                    <div class="form-group">
+                        <div class="progress">
+                            <div class="progress-bar progress-bar-success myprogress" role="progressbar" style="width:0%">0%</div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery.form/3.51/jquery.form.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+    crossorigin="anonymous"></script>
+<script>
+    $(document).ready(function () {
+
+        $('#uploadForm').submit(function () {
+            $("#status").empty().text("File is uploading...");
+            $(this).ajaxSubmit({
+
+                error: function (xhr) {
+                    status('Error: ' + xhr.status);
+                },
+                xhr: function () {
+                    var xhr = new window.XMLHttpRequest();
+                    xhr.upload.addEventListener("progress", function (evt) {
+                        if (evt.lengthComputable) {
+                            var percentComplete = evt.loaded / evt.total;
+                            percentComplete = parseInt(percentComplete * 100);
+                            $('.myprogress').text(percentComplete + '%');
+                            $('.myprogress').css('width', percentComplete + '%');
+                        }
+                    }, false);
+                    return xhr;
+                },
+
+                success: function (response) {
+                    $("#status").empty().text(response);
+                    console.log(response);
+                }
+            });
+            //Very important line, it disable the page refresh.
+            return false;
+        });
+    });
+
+</script>
+
+</html>
